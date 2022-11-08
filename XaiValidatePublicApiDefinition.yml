@@ -12,7 +12,7 @@ info:
     
     
     XAI Validate solves for digital financial data validation using Explainable Artificial Intelligence (XAI) models to distil and render the customers’ financial data into an application decision summary. It is powered by a set of sophisticated normalisation, categorisation and assessment models, supported by an intuitive user interface that allows assessors to interact with and understand your customers' financial data. This will dramatically reduce the time required for assessment and to increase conversion, while ensuring process assurance and credit quality. We prove all technology against our direct to consumer home loans business, [Tic:Toc Home Loans](https://tictoc.com.au/).
-     
+
     If you're a lender you can use XAI Validate in two ways:
       - **Detect and Position** (Actuals only): instantly identify income, expenses, assets and liabilities, behavioural and risk insights.
       - **Verify and Decision** (Stated vs Actuals): ingest and verify customers’ declared financials against the actual financial position identified in the data. This also allows you to configure your credit policy automating responsible lending assessment decisions.      
@@ -3995,9 +3995,16 @@ components:
                     - UNIT
                     - APARTMENT
                     - FLATS
+                    - TOWNHOUSE
                   EstimatedValue:
                     type: number
                     description: The estimated value of the security.
+                  PropertyUsage:
+                    type: string
+                    description: The usage of the security.
+                    enum:
+                    - PRI
+                    - INV
             Product:
               properties:
                   Key:
@@ -4227,7 +4234,8 @@ components:
                                     - HOUSE
                                     - UNIT
                                     - APARTMENT
-                                    - FLATS                                    
+                                    - FLATS
+                                    - TOWNHOUSE                         
                                     description: The property type of the investment property.
                                   IncomeRentalMonthly:
                                     type: number
@@ -4331,6 +4339,14 @@ components:
                                     - PI
                                     - IO
                                     - LOC
+                                  IsRefinanceLoan:
+                                    type: boolean
+                                    description: Determines if liability is being refinanced (debt consolidation). This boolean will indicate whether it is to be excluded from ongoing debt committments. It will not automatically add the outstanding balance to the new BorrowingAmount / LoanAmount.
+                                    default: false
+                                  IsInvestmentLoan:
+                                    type: boolean
+                                    description: Determines if this liability is secured to a property used for investment purposes. If set to "true" the interest is tax deductible.
+                                    default: false
                             LiabilitiesPersonalLoans:
                               type: array
                               description: The applicant's personal loans.
@@ -4355,6 +4371,10 @@ components:
                                     maximum: 1
                                     minimum: 0
                                     example: 0.5
+                                  IsRefinanceLoan:
+                                    type: boolean
+                                    default: false
+                                    description: Determines if liability is being refinanced (debt consolidation). This boolean will indicate whether it is to be excluded from ongoing debt committments. It will not automatically add the outstanding balance to the new BorrowingAmount / LoanAmount.
                             LiabilitiesCreditCards:
                               type: array
                               description: The applicant's credit cards.
@@ -4373,6 +4393,10 @@ components:
                                   CreditCardLimit:
                                     type: number
                                     description: Declared credit card monthly repayment.
+                                  IsRefinanceLoan:
+                                    type: boolean
+                                    default: false
+                                    description: Determines if liability is being refinanced (debt consolidation). This boolean will indicate whether it is to be excluded from ongoing debt committments. It will not automatically add the outstanding balance to the new BorrowingAmount / LoanAmount.
                             LiabilitiesRentOrBoardMonthly:
                               type: number
                               description: 'The applicant''s monthly rent or board payments. '
