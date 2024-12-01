@@ -1,0 +1,1276 @@
+{
+	"info": {
+		"_postman_id": "42aa5e4f-8439-4859-b789-9153df0bdacf",
+		"name": "Xapii Api Request Examples",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3797620"
+	},
+	"item": [
+		{
+			"name": "Example #1: Vehicle purchase 🚗, two Applicants, same household, HEM expenses, no debt, PAYG income",
+			"item": [
+				{
+					"name": "Get Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"SessionToken\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-length": true,
+							"user-agent": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ClientSecret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ClientId}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "https://{{AuthUrl}}/oauth2/token?grant_type={{GrantType}}",
+							"protocol": "https",
+							"host": [
+								"{{AuthUrl}}"
+							],
+							"path": [
+								"oauth2",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "{{GrantType}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create application shell 🐚",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"Arn\", jsonData.ApplicationReferenceNumber);\r",
+									"pm.environment.set(\"ApplicantOneId\", jsonData.Applicants[0].Email);\r",
+									"pm.environment.set(\"ApplicantTwoId\", jsonData.Applicants[1].Email);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Application\": {\r\n        \"ExternalApplicationReferenceNumber\": \"I_AM_READY\",\r\n        \"ApplicationContacts\": [\r\n            {\r\n                \"EmailAddress\": \"human11@example.com \",\r\n                \"FirstName\": \"Human1\",\r\n                \"Surname\": \"Person\",\r\n                \"ExternalDataId\": {\r\n                    \"DataProviderName\": \"EXT\"\r\n                }\r\n            },\r\n            {\r\n                \"EmailAddress\": \"human22@example.com \",\r\n                \"FirstName\": \"Human2\",\r\n                \"Surname\": \"Person\",\r\n                \"ExternalDataId\": {\r\n                    \"DataProviderName\": \"EXT\"\r\n                }\r\n            }\r\n        ],\r\n        \"IsActualsOnly\": false\r\n    },\r\n    \"Lender\": \"YOUR_POLICY_CODE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/financialvalidation/application/create",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"financialvalidation",
+								"application",
+								"create"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Add some household🏡 & income 💲 info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Application\": {\r\n        \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n        \"ApplicationStatus\": \"Assess\",\r\n        \"SecurityProperties\": [\r\n            {\r\n                \"PropertyAddress\": \"Subarua BRZ 2023\",\r\n                \"PropertyPostcode\": \"5067\",\r\n                \"PropertyUsage\": \"Livein\",\r\n                \"EstimatedValue\": 45000\r\n            }\r\n        ],\r\n        \"Product\": {\r\n            \"RepaymentType\": \"PI\",\r\n            \"LoanPurpose\": \"PUR\",\r\n            \"LoanTerm\": 5,\r\n            \"InterestRate\": 0.0949,\r\n            \"LoanAmount\": 42000\r\n        },\r\n        \"Households\": [\r\n            {\r\n                \"HouseholdAddress\": \"21 Jump Street, Norwood SA, 5067\",\r\n                \"ApplicationContacts\": [\r\n                    {\r\n                        \"EmailAddress\": \"{{ApplicantOneId}}\",\r\n                        \"MaritalStatus\": \"DEFACTO\",\r\n                        \"Dependants\": 1,\r\n                        \"DeclaredFinancialsApplicant\": {\r\n                            \"IncomeSalary\": {\r\n                                \"IncomeGrossAnnualSalaryAmount\": 180000,\r\n                                \"IncomeGrossAnnualSalaryFrequency\": \"ANNUAL\",\r\n                                \"Employer\": \"ACME Inc\",\r\n                                \"EmploymentType\": \"CASUAL\"\r\n                            }\r\n                        }\r\n                    },\r\n                    {\r\n                        \"EmailAddress\": \"{{ApplicantTwoId}}\",\r\n                        \"MaritalStatus\": \"DEFACTO\",\r\n                        \"Dependants\": 1,\r\n                        \"DeclaredFinancialsApplicant\": {\r\n                            \"IncomeSalary\": {\r\n                                \"IncomeGrossAnnualSalaryAmount\": 120000,\r\n                                \"IncomeGrossAnnualSalaryFrequency\": \"ANNUAL\",\r\n                                \"Employer\": \"Popsicool\",\r\n                                \"EmploymentType\": \"FT\"\r\n                            }\r\n                        }\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/financialvalidation/application/manage",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"financialvalidation",
+								"application",
+								"manage"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Let's see how much they could borrow🤔",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// results from serviceability\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"NewLoanRepayment\", JSON.stringify(jsonData.CurrentRepayment));\r",
+									"\r",
+									"\r",
+									"pm.environment.set(\"NetMonthlySurplus\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.NetMonthlySurplus));\r",
+									"pm.environment.set(\"DebtToIncomeRatio\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.DebtToIncomeRatio));\r",
+									"pm.environment.set(\"AllHouseholdsHemExpenses\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.AllHouseholdsHemExpenses));\r",
+									"pm.environment.set(\"MaxBorrowingAmount\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.MaxBorrowingAmount));\r",
+									"\r",
+									"var NetMonthlySurplus = pm.environment.get(\"NetMonthlySurplus\");\r",
+									"var DebtToIncomeRatio = pm.environment.get(\"DebtToIncomeRatio\");\r",
+									"var AllHouseholdsHemExpenses = pm.environment.get(\"AllHouseholdsHemExpenses\");\r",
+									"var MaxBorrowingAmount = pm.environment.get(\"MaxBorrowingAmount\");\r",
+									"\r",
+									"\r",
+									"var results = `Net surplus per month is ${NetMonthlySurplus}\\n\\nDebt to income ratio is ${DebtToIncomeRatio}\r",
+									"    \\nMonthly HEM expenses for the deal are ${AllHouseholdsHemExpenses}\r",
+									"    \\nApplicants can borrow an additional ${MaxBorrowingAmount}`\r",
+									"\r",
+									"console.log(results);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n    \"NewFacilities\": [\r\n        {}\r\n    ],\r\n    \"ConfigurationSet\": {\r\n        \"Merchant\": \"YOUR_PARTNER_CODE\",\r\n        \"Lender\": \"YOUR_POLICY_CODE\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/serviceability/getserviceability",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"serviceability",
+								"getserviceability"
+							]
+						},
+						"description": " "
+					},
+					"response": []
+				},
+				{
+					"name": "What about the MAX potential borrowing amount?",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n    \"ConfigurationSet\": {\r\n        \"Merchant\": \"YOUR_PARTNER_CODE\",\r\n        \"Lender\": \"YOUR_POLICY_CODE\"\r\n    },\r\n    \"ValidationTypes\": [\r\n        \"VALIDATED\",\r\n        \"STATED\",\r\n        \"ACTUAL\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/serviceability/scenario/potentialmaxborrowing",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"serviceability",
+								"scenario",
+								"potentialmaxborrowing"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Example #2: Live-in Purchase 🏡, two Applicants, same household, HEM expenses, no debt, PAYG income Copy",
+			"item": [
+				{
+					"name": "Get Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"SessionToken\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-length": true,
+							"user-agent": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ClientSecret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ClientId}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "https://{{AuthUrl}}/oauth2/token?grant_type={{GrantType}}",
+							"protocol": "https",
+							"host": [
+								"{{AuthUrl}}"
+							],
+							"path": [
+								"oauth2",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "{{GrantType}}"
+								}
+							]
+						},
+						"description": "  "
+					},
+					"response": []
+				},
+				{
+					"name": "Create application shell 🐚",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"Arn\", jsonData.ApplicationReferenceNumber);\r",
+									"pm.environment.set(\"ApplicantOneId\", jsonData.Applicants[0].Email);\r",
+									"pm.environment.set(\"ApplicantTwoId\", jsonData.Applicants[1].Email);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Application\": {\r\n        \"ExternalApplicationReferenceNumber\": \"I_AM_READY\",\r\n        \"ApplicationContacts\": [\r\n            {\r\n                \"EmailAddress\": \"human11@example.com \",\r\n                \"FirstName\": \"Human1\",\r\n                \"Surname\": \"Person\",\r\n                \"ExternalDataId\": {\r\n                    \"DataProviderName\": \"EXT\"\r\n                }\r\n            },\r\n            {\r\n                \"EmailAddress\": \"human22@example.com \",\r\n                \"FirstName\": \"Human2\",\r\n                \"Surname\": \"Person\",\r\n                \"ExternalDataId\": {\r\n                    \"DataProviderName\": \"EXT\"\r\n                }\r\n            }\r\n        ],\r\n        \"IsActualsOnly\": false\r\n    },\r\n    \"Lender\": \"YOUR_POLICY_CODE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/financialvalidation/application/create",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"financialvalidation",
+								"application",
+								"create"
+							]
+						},
+						"description": "  "
+					},
+					"response": []
+				},
+				{
+					"name": "Add some household🏡 & income 💲 info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Application\": {\r\n        \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n        \"ApplicationStatus\": \"Assess\",\r\n        \"SecurityProperties\": [\r\n            {\r\n                \"PropertyAddress\": \"22 Jump Street, Norwood SA, 5067\",\r\n                \"PropertyPostcode\": \"5067\",\r\n                \"PropertyUsage\": \"Livein\",\r\n                \"EstimatedValue\": 1100000\r\n            }\r\n        ],\r\n        \"Product\": {\r\n            \"RepaymentType\": \"PI\",\r\n            \"LoanPurpose\": \"PUR\",\r\n            \"LoanTerm\": 30,\r\n            \"InterestRate\": 0.0649,\r\n            \"LoanAmount\": 850000\r\n        },\r\n        \"Households\": [\r\n            {\r\n                \"HouseholdAddress\": \"21 Jump Street, Norwood SA, 5067\",\r\n                \"ApplicationContacts\": [\r\n                    {\r\n                        \"EmailAddress\": \"{{ApplicantOneId}}\",\r\n                        \"MaritalStatus\": \"DEFACTO\",\r\n                        \"Dependants\": 1,\r\n                        \"DeclaredFinancialsApplicant\": {\r\n                            \"IncomeSalary\": {\r\n                                \"IncomeGrossAnnualSalaryAmount\": 180000,\r\n                                \"IncomeGrossAnnualSalaryFrequency\": \"ANNUAL\",\r\n                                \"Employer\": \"ACME Inc\",\r\n                                \"EmploymentType\": \"CASUAL\"\r\n                            }\r\n                        }\r\n                    },\r\n                    {\r\n                        \"EmailAddress\": \"{{ApplicantTwoId}}\",\r\n                        \"MaritalStatus\": \"DEFACTO\",\r\n                        \"Dependants\": 1,\r\n                        \"DeclaredFinancialsApplicant\": {\r\n                            \"IncomeSalary\": {\r\n                                \"IncomeGrossAnnualSalaryAmount\": 120000,\r\n                                \"IncomeGrossAnnualSalaryFrequency\": \"ANNUAL\",\r\n                                \"Employer\": \"Popsicool\",\r\n                                \"EmploymentType\": \"FT\"\r\n                            }\r\n                        }\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/financialvalidation/application/manage",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"financialvalidation",
+								"application",
+								"manage"
+							]
+						},
+						"description": "  "
+					},
+					"response": []
+				},
+				{
+					"name": "Let's see how much they could borrow🤔",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// results from serviceability\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"NewLoanRepayment\", JSON.stringify(jsonData.CurrentRepayment));\r",
+									"\r",
+									"\r",
+									"pm.environment.set(\"NetMonthlySurplus\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.NetMonthlySurplus));\r",
+									"pm.environment.set(\"DebtToIncomeRatio\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.DebtToIncomeRatio));\r",
+									"pm.environment.set(\"AllHouseholdsHemExpenses\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.AllHouseholdsHemExpenses));\r",
+									"pm.environment.set(\"MaxBorrowingAmount\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.MaxBorrowingAmount));\r",
+									"\r",
+									"var NetMonthlySurplus = pm.environment.get(\"NetMonthlySurplus\");\r",
+									"var DebtToIncomeRatio = pm.environment.get(\"DebtToIncomeRatio\");\r",
+									"var AllHouseholdsHemExpenses = pm.environment.get(\"AllHouseholdsHemExpenses\");\r",
+									"var MaxBorrowingAmount = pm.environment.get(\"MaxBorrowingAmount\");\r",
+									"\r",
+									"\r",
+									"var results = `Net surplus per month is ${NetMonthlySurplus}\\n\\nDebt to income ratio is ${DebtToIncomeRatio}\r",
+									"    \\nMonthly HEM expenses for the deal are ${AllHouseholdsHemExpenses}\r",
+									"    \\nApplicants can borrow an additional ${MaxBorrowingAmount}`\r",
+									"\r",
+									"console.log(results);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n    \"NewFacilities\": [\r\n        {}\r\n    ],\r\n    \"ConfigurationSet\": {\r\n        \"Merchant\": \"YOUR_PARTNER_CODE\",\r\n        \"Lender\": \"YOUR_POLICY_CODE\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/serviceability/getserviceability",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"serviceability",
+								"getserviceability"
+							]
+						},
+						"description": " "
+					},
+					"response": []
+				},
+				{
+					"name": "What about the MAX potential borrowing amount?",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n    \"ConfigurationSet\": {\r\n        \"Merchant\": \"YOUR_PARTNER_CODE\",\r\n        \"Lender\": \"YOUR_POLICY_CODE\"\r\n    },\r\n    \"ValidationTypes\": [\r\n        \"VALIDATED\",\r\n        \"STATED\",\r\n        \"ACTUAL\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/serviceability/scenario/potentialmaxborrowing",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"serviceability",
+								"scenario",
+								"potentialmaxborrowing"
+							]
+						},
+						"description": " "
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Example #3: House Investment Purchase 🏡, two Applicants, different household, Expenses, a few debts, rental property, PAYG income Copy",
+			"item": [
+				{
+					"name": "Get Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"SessionToken\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-length": true,
+							"user-agent": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ClientSecret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ClientId}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "https://{{AuthUrl}}/oauth2/token?grant_type={{GrantType}}",
+							"protocol": "https",
+							"host": [
+								"{{AuthUrl}}"
+							],
+							"path": [
+								"oauth2",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "{{GrantType}}"
+								}
+							]
+						},
+						"description": "  "
+					},
+					"response": []
+				},
+				{
+					"name": "Create application shell 🐚",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"Arn\", jsonData.ApplicationReferenceNumber);\r",
+									"pm.environment.set(\"ApplicantOneId\", jsonData.Applicants[0].Email);\r",
+									"pm.environment.set(\"ApplicantTwoId\", jsonData.Applicants[1].Email);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Application\": {\r\n        \"ExternalApplicationReferenceNumber\": \"I_AM_READY\",\r\n        \"ApplicationContacts\": [\r\n            {\r\n                \"EmailAddress\": \"human11@example.com \",\r\n                \"FirstName\": \"Human1\",\r\n                \"Surname\": \"Person\",\r\n                \"ExternalDataId\": {\r\n                    \"DataProviderName\": \"EXT\"\r\n                },\r\n                \"ContactType\": \"PA\"\r\n            },\r\n            {\r\n                \"EmailAddress\": \"human22@example.com \",\r\n                \"FirstName\": \"Human2\",\r\n                \"Surname\": \"Person\",\r\n                \"ExternalDataId\": {\r\n                    \"DataProviderName\": \"EXT\"\r\n                },\r\n                \"ContactType\": \"SA\"\r\n            }\r\n        ],\r\n        \"IsActualsOnly\": false\r\n    },\r\n    \"Lender\": \"YOUR_POLICY_CODE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/financialvalidation/application/create",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"financialvalidation",
+								"application",
+								"create"
+							]
+						},
+						"description": "  "
+					},
+					"response": []
+				},
+				{
+					"name": "Add some household🏡, expenses 💳 & income 💲 info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Application\": {\r\n        \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n        \"ApplicationStatus\": \"Assess\",\r\n        \"SecurityProperties\": [\r\n            {\r\n                \"PropertyAddress\": \"22 Jump Street, Norwood SA, 5067\",\r\n                \"PropertyPostcode\": \"5067\",\r\n                \"PropertyUsage\": \"Investment\",\r\n                \"EstimatedValue\": 1000000\r\n            }\r\n        ],\r\n        \"Product\": {\r\n            \"RepaymentType\": \"PI\",\r\n            \"LoanPurpose\": \"PUR\",\r\n            \"LoanTerm\": 30,\r\n            \"InterestRate\": 0.0649,\r\n            \"LoanAmount\": 850000\r\n        },\r\n        \"Households\": [\r\n            {\r\n                \"HouseholdAddress\": \"21 Jump Street, Norwood SA, 5067\",\r\n                \"ApplicationContacts\": [\r\n                    {\r\n                        \"EmailAddress\": \"{{ApplicantOneId}}\",\r\n                        \"MaritalStatus\": \"DEFACTO\",\r\n                        \"HasHecsDebt\": true,\r\n                        \"Dependants\": 1,\r\n                        \"DeclaredFinancialsApplicant\": {\r\n                            \"IncomeSalary\": {\r\n                                \"IncomeGrossAnnualSalaryAmount\": 180000,\r\n                                \"IncomeGrossAnnualSalaryFrequency\": \"ANNUAL\",\r\n                                \"Employer\": \"ACME Inc\",\r\n                                \"EmploymentType\": \"FT\"\r\n                            },\r\n                            \"IncomeRental\": [\r\n                                {\r\n                                    \"RentalPropertyAddress\": \"22 Jump Street, Norwood SA, 5067\",\r\n                                    \"RentalPropertyPostcode\": \"5067\",\r\n                                    \"RentalPropertyType\": \"UNIT\",\r\n                                    \"IncomeRentalMonthly\": 1500,\r\n                                    \"InvestmentPropertyOwnershipPercentage\": 0.5,\r\n                                    \"InvestmentPropertyExpenses\": 500\r\n                                }\r\n                            ],\r\n                            \"LiabilitiesHomeLoans\": [\r\n                                {\r\n                                    \"HomeLoanPropertyAddress\": \"32 Jump Street, Norwood SA, 5067\",\r\n                                    \"HomeLoanBalance\": 450000,\r\n                                    \"HomeLoanRepaymentMonthly\": 0,\r\n                                    \"HomeLoanOwnershipPercentage\": 0.5,\r\n                                    \"HomeLoanInterestRate\": 0.051,\r\n                                    \"HomeLoanTerm\": 250,\r\n                                    \"HomeLoanRepaymentType\": \"PI\"\r\n                                }\r\n                            ],\r\n                            \"LiabilitiesCreditCards\": [\r\n                                {\r\n                                    \"CreditCardName\": \"Badland Credit Card\",\r\n                                    \"CreditCardBalance\": 100,\r\n                                    \"CreditCardLimit\": 5000\r\n                                }\r\n                            ],\r\n                            \"ExpensesFoodGroceriesMonthly\": 1200,\r\n                            \"ExpensesUtiliesPrimaryResidenceMonthly\": 250,\r\n                            \"ExpensesUtilitiesInsuranceMonthly\": 150,\r\n                            \"ExpensesClothingPersonalCareMonthly\": 400,\r\n                            \"ExpensesMedicalHealthCareMonthly\": 100,\r\n                            \"ExpensesTransportMonthly\": 500,\r\n                            \"ExpensesEntertainmentRecreationMonthly\": 1000,\r\n                            \"ExpensesChildcareMonthly\": 0,\r\n                            \"ExpensesRentMonthly\": 0,\r\n                            \"ExpensesSchoolTuitionMonthly\": 0,\r\n                            \"ExpensesAlcoholMonthly\": 150,\r\n                            \"ExpensesCashWithdrawalsMonthly\": 0,\r\n                            \"ExpensesCommunicationsMonthly\": 100,\r\n                            \"ExpensesCreditCardRepaymentsMonthly\": 0,\r\n                            \"ExpensesFeesTaxesOtherResidencesMonthly\": 0,\r\n                            \"ExpensesFeesTaxesPrimaryResidencesMonthly\": 100,\r\n                            \"ExpensesGeneralInsuranceMonthly\": 100,\r\n                            \"ExpensesHealthInsuranceMonthly\": 200,\r\n                            \"ExpensesHigherEducationMonthly\": 0,\r\n                            \"ExpensesHomeLoanRepaymentsMonthly\": 0,\r\n                            \"ExpensesHouseholdFurnishingsMonthly\": 0,\r\n                            \"ExpensesOtherLoanRepaymentsMonthly\": 0,\r\n                            \"ExpensesRecreationalGamblingMonthly\": 0,\r\n                            \"ExpensesRestaurantsCafesMonthly\": 200,\r\n                            \"ExpensesTransfersMonthly\": 0,\r\n                            \"ExpensesOtherMonthly\": 0\r\n                        }\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"HouseholdAddress\": \"25 Jump Street, Norwood SA, 5067\",\r\n                \"ApplicationContacts\": [\r\n                    {\r\n                        \"EmailAddress\": \"{{ApplicantTwoId}}\",\r\n                        \"MaritalStatus\": \"DEFACTO\",\r\n                        \"HasHecsDebt\": true,\r\n                        \"Dependants\": 1,\r\n                        \"DeclaredFinancialsApplicant\": {\r\n                            \"IncomeSalary\": {\r\n                                \"IncomeGrossAnnualSalaryAmount\": 180000,\r\n                                \"IncomeGrossAnnualSalaryFrequency\": \"ANNUAL\",\r\n                                \"Employer\": \"ACME Inc\",\r\n                                \"EmploymentType\": \"FT\"\r\n                            },\r\n                            \"IncomeRental\": [\r\n                                {\r\n                                    \"RentalPropertyAddress\": \"22 Jump Street, Norwood SA, 5067\",\r\n                                    \"RentalPropertyPostcode\": \"5067\",\r\n                                    \"RentalPropertyType\": \"UNIT\",\r\n                                    \"IncomeRentalMonthly\": 1500,\r\n                                    \"InvestmentPropertyOwnershipPercentage\": 0.5,\r\n                                    \"InvestmentPropertyExpenses\": 500\r\n                                }\r\n                            ],\r\n                            \"LiabilitiesHomeLoans\": [\r\n                                {\r\n                                    \"HomeLoanPropertyAddress\": \"32 Jump Street, Norwood SA, 5067\",\r\n                                    \"HomeLoanBalance\": 450000,\r\n                                    \"HomeLoanRepaymentMonthly\": 0,\r\n                                    \"HomeLoanOwnershipPercentage\": 0.5,\r\n                                    \"HomeLoanInterestRate\": 0.051,\r\n                                    \"HomeLoanTerm\": 250,\r\n                                    \"HomeLoanRepaymentType\": \"PI\"\r\n                                }\r\n                            ],\r\n                            \"LiabilitiesCreditCards\": [\r\n                                {\r\n                                    \"CreditCardName\": \"Badland Credit Card\",\r\n                                    \"CreditCardBalance\": 100,\r\n                                    \"CreditCardLimit\": 5000\r\n                                }\r\n                            ],\r\n                            \"ExpensesFoodGroceriesMonthly\": 800,\r\n                            \"ExpensesUtiliesPrimaryResidenceMonthly\": 150,\r\n                            \"ExpensesUtilitiesInsuranceMonthly\": 150,\r\n                            \"ExpensesClothingPersonalCareMonthly\": 400,\r\n                            \"ExpensesMedicalHealthCareMonthly\": 100,\r\n                            \"ExpensesTransportMonthly\": 500,\r\n                            \"ExpensesEntertainmentRecreationMonthly\": 500,\r\n                            \"ExpensesChildcareMonthly\": 0,\r\n                            \"ExpensesRentMonthly\": 0,\r\n                            \"ExpensesSchoolTuitionMonthly\": 0,\r\n                            \"ExpensesAlcoholMonthly\": 50,\r\n                            \"ExpensesCashWithdrawalsMonthly\": 0,\r\n                            \"ExpensesCommunicationsMonthly\": 100,\r\n                            \"ExpensesCreditCardRepaymentsMonthly\": 0,\r\n                            \"ExpensesFeesTaxesOtherResidencesMonthly\": 0,\r\n                            \"ExpensesFeesTaxesPrimaryResidencesMonthly\": 100,\r\n                            \"ExpensesGeneralInsuranceMonthly\": 100,\r\n                            \"ExpensesHealthInsuranceMonthly\": 100,\r\n                            \"ExpensesHigherEducationMonthly\": 0,\r\n                            \"ExpensesRestaurantsCafesMonthly\": 200\r\n                        }\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/financialvalidation/application/manage",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"financialvalidation",
+								"application",
+								"manage"
+							]
+						},
+						"description": "  "
+					},
+					"response": []
+				},
+				{
+					"name": "Let's see how much they could borrow🤔",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// results from serviceability\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"NewLoanRepayment\", JSON.stringify(jsonData.CurrentRepayment));\r",
+									"\r",
+									"\r",
+									"pm.environment.set(\"NetMonthlySurplus\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.NetMonthlySurplus));\r",
+									"pm.environment.set(\"DebtToIncomeRatio\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.DebtToIncomeRatio));\r",
+									"pm.environment.set(\"AllHouseholdsHemExpenses\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.AllHouseholdsHemExpenses));\r",
+									"pm.environment.set(\"MaxBorrowingAmount\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.MaxBorrowingAmount));\r",
+									"\r",
+									"var NetMonthlySurplus = pm.environment.get(\"NetMonthlySurplus\");\r",
+									"var DebtToIncomeRatio = pm.environment.get(\"DebtToIncomeRatio\");\r",
+									"var AllHouseholdsHemExpenses = pm.environment.get(\"AllHouseholdsHemExpenses\");\r",
+									"var MaxBorrowingAmount = pm.environment.get(\"MaxBorrowingAmount\");\r",
+									"\r",
+									"\r",
+									"var results = `Net surplus per month is ${NetMonthlySurplus}\\n\\nDebt to income ratio is ${DebtToIncomeRatio}\r",
+									"    \\nMonthly HEM expenses for the deal are ${AllHouseholdsHemExpenses}\r",
+									"    \\nApplicants can borrow an additional ${MaxBorrowingAmount}`\r",
+									"\r",
+									"console.log(results);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n    \"NewFacilities\": [\r\n        {}\r\n    ],\r\n    \"ConfigurationSet\": {\r\n        \"Merchant\": \"YOUR_PARTNER_CODE\",\r\n        \"Lender\": \"YOUR_POLICY_CODE\"\r\n    },\r\n    \"ValidationTypes\": {\r\n        \"Incomes\": \"STATED\",\r\n        \"Expenses\": \"STATED\",\r\n        \"Liabilities\": \"STATED\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/serviceability/getserviceability",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"serviceability",
+								"getserviceability"
+							]
+						},
+						"description": " "
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Example #4: Rental Income from an investment property",
+			"item": [
+				{
+					"name": "Get Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"SessionToken\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-length": true,
+							"user-agent": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ClientSecret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ClientId}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "https://{{AuthUrl}}/oauth2/token?grant_type={{GrantType}}",
+							"protocol": "https",
+							"host": [
+								"{{AuthUrl}}"
+							],
+							"path": [
+								"oauth2",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "{{GrantType}}"
+								}
+							]
+						},
+						"description": "  "
+					},
+					"response": []
+				},
+				{
+					"name": "Create application shell 🐚",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"Arn\", jsonData.ApplicationReferenceNumber);\r",
+									"pm.environment.set(\"ApplicantOneId\", jsonData.Applicants[0].Email);\r",
+									"pm.environment.set(\"ApplicantTwoId\", jsonData.Applicants[1].Email);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Application\": {\r\n        \"ExternalApplicationReferenceNumber\": \"I_AM_READY\",\r\n        \"ApplicationContacts\": [\r\n            {\r\n                \"EmailAddress\": \"human11@example.com \",\r\n                \"FirstName\": \"Human1\",\r\n                \"Surname\": \"Person\",\r\n                \"ExternalDataId\": {\r\n                    \"DataProviderName\": \"EXT\"\r\n                },\r\n                \"ContactType\": \"PA\"\r\n            },\r\n            {\r\n                \"EmailAddress\": \"human22@example.com \",\r\n                \"FirstName\": \"Human2\",\r\n                \"Surname\": \"Person\",\r\n                \"ExternalDataId\": {\r\n                    \"DataProviderName\": \"EXT\"\r\n                },\r\n                \"ContactType\": \"SA\"\r\n            }\r\n        ],\r\n        \"IsActualsOnly\": false\r\n    },\r\n    \"Lender\": \"YOUR_POLICY_CODE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/financialvalidation/application/create",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"financialvalidation",
+								"application",
+								"create"
+							]
+						},
+						"description": "  "
+					},
+					"response": []
+				},
+				{
+					"name": "Add some household🏡, expenses 💳 & income 💲 info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Application\": {\r\n        \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n        \"ApplicationStatus\": \"Assess\",\r\n        \"SecurityProperties\": [\r\n            {\r\n                \"PropertyAddress\": \"22 Jump Street, Norwood SA, 5067\",\r\n                \"PropertyPostcode\": \"5067\",\r\n                \"PropertyUsage\": \"Investment\",\r\n                \"EstimatedValue\": 1000000\r\n            }\r\n        ],\r\n        \"Product\": {\r\n            \"RepaymentType\": \"PI\",\r\n            \"LoanPurpose\": \"PUR\",\r\n            \"LoanTerm\": 30,\r\n            \"InterestRate\": 0.0649,\r\n            \"LoanAmount\": 850000\r\n        },\r\n        \"Households\": [\r\n            {\r\n                \"HouseholdAddress\": \"21 Jump Street, Norwood SA, 5067\",\r\n                \"ApplicationContacts\": [\r\n                    {\r\n                        \"EmailAddress\": \"{{ApplicantOneId}}\",\r\n                        \"MaritalStatus\": \"DEFACTO\",\r\n                        \"HasHecsDebt\": true,\r\n                        \"Dependants\": 1,\r\n                        \"DeclaredFinancialsApplicant\": {\r\n                            \"IncomeSalary\": {\r\n                                \"IncomeGrossAnnualSalaryAmount\": 180000,\r\n                                \"IncomeGrossAnnualSalaryFrequency\": \"ANNUAL\",\r\n                                \"Employer\": \"ACME Inc\",\r\n                                \"EmploymentType\": \"FT\"\r\n                            },\r\n                            \"IncomeRental\": [\r\n                                {\r\n                                    \"RentalPropertyAddress\": \"22 Jump Street, Norwood SA, 5067\",\r\n                                    \"RentalPropertyPostcode\": \"5067\",\r\n                                    \"RentalPropertyType\": \"UNIT\",\r\n                                    \"IncomeRentalMonthly\": 1500,\r\n                                    \"InvestmentPropertyOwnershipPercentage\": 0.5,\r\n                                    \"InvestmentPropertyExpenses\": 500\r\n                                }\r\n                            ],\r\n                            \"LiabilitiesHomeLoans\": [\r\n                                {\r\n                                    \"HomeLoanPropertyAddress\": \"32 Jump Street, Norwood SA, 5067\",\r\n                                    \"HomeLoanBalance\": 450000,\r\n                                    \"HomeLoanRepaymentMonthly\": 0,\r\n                                    \"HomeLoanOwnershipPercentage\": 0.5,\r\n                                    \"HomeLoanInterestRate\": 0.051,\r\n                                    \"HomeLoanTerm\": 250,\r\n                                    \"HomeLoanRepaymentType\": \"PI\"\r\n                                }\r\n                            ],\r\n                            \"LiabilitiesCreditCards\": [\r\n                                {\r\n                                    \"CreditCardName\": \"Badland Credit Card\",\r\n                                    \"CreditCardBalance\": 100,\r\n                                    \"CreditCardLimit\": 5000\r\n                                }\r\n                            ],\r\n                            \"ExpensesFoodGroceriesMonthly\": 1200,\r\n                            \"ExpensesUtiliesPrimaryResidenceMonthly\": 250,\r\n                            \"ExpensesUtilitiesInsuranceMonthly\": 150,\r\n                            \"ExpensesClothingPersonalCareMonthly\": 400,\r\n                            \"ExpensesMedicalHealthCareMonthly\": 100,\r\n                            \"ExpensesTransportMonthly\": 500,\r\n                            \"ExpensesEntertainmentRecreationMonthly\": 1000,\r\n                            \"ExpensesChildcareMonthly\": 0,\r\n                            \"ExpensesRentMonthly\": 0,\r\n                            \"ExpensesSchoolTuitionMonthly\": 0,\r\n                            \"ExpensesAlcoholMonthly\": 150,\r\n                            \"ExpensesCashWithdrawalsMonthly\": 0,\r\n                            \"ExpensesCommunicationsMonthly\": 100,\r\n                            \"ExpensesCreditCardRepaymentsMonthly\": 0,\r\n                            \"ExpensesFeesTaxesOtherResidencesMonthly\": 0,\r\n                            \"ExpensesFeesTaxesPrimaryResidencesMonthly\": 100,\r\n                            \"ExpensesGeneralInsuranceMonthly\": 100,\r\n                            \"ExpensesHealthInsuranceMonthly\": 200,\r\n                            \"ExpensesHigherEducationMonthly\": 0,\r\n                            \"ExpensesHomeLoanRepaymentsMonthly\": 0,\r\n                            \"ExpensesHouseholdFurnishingsMonthly\": 0,\r\n                            \"ExpensesOtherLoanRepaymentsMonthly\": 0,\r\n                            \"ExpensesRecreationalGamblingMonthly\": 0,\r\n                            \"ExpensesRestaurantsCafesMonthly\": 200,\r\n                            \"ExpensesTransfersMonthly\": 0,\r\n                            \"ExpensesOtherMonthly\": 0\r\n                        }\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"HouseholdAddress\": \"25 Jump Street, Norwood SA, 5067\",\r\n                \"ApplicationContacts\": [\r\n                    {\r\n                        \"EmailAddress\": \"{{ApplicantTwoId}}\",\r\n                        \"MaritalStatus\": \"DEFACTO\",\r\n                        \"HasHecsDebt\": true,\r\n                        \"Dependants\": 1,\r\n                        \"DeclaredFinancialsApplicant\": {\r\n                            \"IncomeSalary\": {\r\n                                \"IncomeGrossAnnualSalaryAmount\": 180000,\r\n                                \"IncomeGrossAnnualSalaryFrequency\": \"ANNUAL\",\r\n                                \"Employer\": \"ACME Inc\",\r\n                                \"EmploymentType\": \"FT\"\r\n                            },\r\n                            \"IncomeRental\": [\r\n                                {\r\n                                    \"RentalPropertyAddress\": \"22 Jump Street, Norwood SA, 5067\",\r\n                                    \"RentalPropertyPostcode\": \"5067\",\r\n                                    \"RentalPropertyType\": \"UNIT\",\r\n                                    \"IncomeRentalMonthly\": 1500,\r\n                                    \"InvestmentPropertyOwnershipPercentage\": 0.5,\r\n                                    \"InvestmentPropertyExpenses\": 500\r\n                                }\r\n                            ],\r\n                            \"LiabilitiesHomeLoans\": [\r\n                                {\r\n                                    \"HomeLoanPropertyAddress\": \"32 Jump Street, Norwood SA, 5067\",\r\n                                    \"HomeLoanBalance\": 450000,\r\n                                    \"HomeLoanRepaymentMonthly\": 0,\r\n                                    \"HomeLoanOwnershipPercentage\": 0.5,\r\n                                    \"HomeLoanInterestRate\": 0.051,\r\n                                    \"HomeLoanTerm\": 250,\r\n                                    \"HomeLoanRepaymentType\": \"PI\"\r\n                                }\r\n                            ],\r\n                            \"LiabilitiesCreditCards\": [\r\n                                {\r\n                                    \"CreditCardName\": \"Badland Credit Card\",\r\n                                    \"CreditCardBalance\": 100,\r\n                                    \"CreditCardLimit\": 5000\r\n                                }\r\n                            ],\r\n                            \"ExpensesFoodGroceriesMonthly\": 800,\r\n                            \"ExpensesUtiliesPrimaryResidenceMonthly\": 150,\r\n                            \"ExpensesUtilitiesInsuranceMonthly\": 150,\r\n                            \"ExpensesClothingPersonalCareMonthly\": 400,\r\n                            \"ExpensesMedicalHealthCareMonthly\": 100,\r\n                            \"ExpensesTransportMonthly\": 500,\r\n                            \"ExpensesEntertainmentRecreationMonthly\": 500,\r\n                            \"ExpensesChildcareMonthly\": 0,\r\n                            \"ExpensesRentMonthly\": 0,\r\n                            \"ExpensesSchoolTuitionMonthly\": 0,\r\n                            \"ExpensesAlcoholMonthly\": 50,\r\n                            \"ExpensesCashWithdrawalsMonthly\": 0,\r\n                            \"ExpensesCommunicationsMonthly\": 100,\r\n                            \"ExpensesCreditCardRepaymentsMonthly\": 0,\r\n                            \"ExpensesFeesTaxesOtherResidencesMonthly\": 0,\r\n                            \"ExpensesFeesTaxesPrimaryResidencesMonthly\": 100,\r\n                            \"ExpensesGeneralInsuranceMonthly\": 100,\r\n                            \"ExpensesHealthInsuranceMonthly\": 100,\r\n                            \"ExpensesHigherEducationMonthly\": 0,\r\n                            \"ExpensesRestaurantsCafesMonthly\": 200\r\n                        }\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/financialvalidation/application/manage",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"financialvalidation",
+								"application",
+								"manage"
+							]
+						},
+						"description": "  "
+					},
+					"response": []
+				},
+				{
+					"name": "Let's see how much they could borrow🤔",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// results from serviceability\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"NewLoanRepayment\", JSON.stringify(jsonData.CurrentRepayment));\r",
+									"\r",
+									"\r",
+									"pm.environment.set(\"NetMonthlySurplus\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.NetMonthlySurplus));\r",
+									"pm.environment.set(\"DebtToIncomeRatio\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.DebtToIncomeRatio));\r",
+									"pm.environment.set(\"AllHouseholdsHemExpenses\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.AllHouseholdsHemExpenses));\r",
+									"pm.environment.set(\"MaxBorrowingAmount\", JSON.stringify(jsonData.ServiceabilityResults[0].ApplicationServiceability.MaxBorrowingAmount));\r",
+									"\r",
+									"var NetMonthlySurplus = pm.environment.get(\"NetMonthlySurplus\");\r",
+									"var DebtToIncomeRatio = pm.environment.get(\"DebtToIncomeRatio\");\r",
+									"var AllHouseholdsHemExpenses = pm.environment.get(\"AllHouseholdsHemExpenses\");\r",
+									"var MaxBorrowingAmount = pm.environment.get(\"MaxBorrowingAmount\");\r",
+									"\r",
+									"\r",
+									"var results = `Net surplus per month is ${NetMonthlySurplus}\\n\\nDebt to income ratio is ${DebtToIncomeRatio}\r",
+									"    \\nMonthly HEM expenses for the deal are ${AllHouseholdsHemExpenses}\r",
+									"    \\nApplicants can borrow an additional ${MaxBorrowingAmount}`\r",
+									"\r",
+									"console.log(results);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{SessionToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{ApiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n    \"NewFacilities\": [\r\n        {}\r\n    ],\r\n    \"ConfigurationSet\": {\r\n        \"Merchant\": \"YOUR_PARTNER_CODE\",\r\n        \"Lender\": \"YOUR_POLICY_CODE\"\r\n    },\r\n    \"ValidationTypes\": {\r\n        \"Incomes\": \"STATED\",\r\n        \"Expenses\": \"STATED\",\r\n        \"Liabilities\": \"STATED\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{BasePath}}/serviceability/getserviceability",
+							"protocol": "https",
+							"host": [
+								"{{BasePath}}"
+							],
+							"path": [
+								"serviceability",
+								"getserviceability"
+							]
+						},
+						"description": " "
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ClientId",
+			"value": null
+		},
+		{
+			"key": "ClientSecret",
+			"value": null
+		},
+		{
+			"key": "Environment",
+			"value": "stage."
+		},
+		{
+			"key": "GrantType",
+			"value": "client_credentials"
+		},
+		{
+			"key": "ApiKey",
+			"value": null
+		},
+		{
+			"key": "AuthUrl",
+			"value": "auth.stage.tictoc.ai"
+		},
+		{
+			"key": "SessionToken",
+			"value": "{{SessionToken}}"
+		},
+		{
+			"key": "BasePath",
+			"value": "api.{{Environment}}tictoc.ai/public/v1.0"
+		}
+	]
+}
