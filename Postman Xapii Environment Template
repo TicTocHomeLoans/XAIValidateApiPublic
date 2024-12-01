@@ -1,0 +1,192 @@
+{
+	"id": "ab2eb863-8ff1-44a1-8c9e-ce10cc1ba1a9",
+	"name": "XAPII_STAGE",
+	"values": [
+		{
+			"key": "AuthUrl",
+			"value": "auth.stage.tictoc.ai",
+			"enabled": true
+		},
+		{
+			"key": "env",
+			"value": "stage",
+			"enabled": true
+		},
+		{
+			"key": "GrantType",
+			"value": "client_credentials",
+			"enabled": true
+		},
+		{
+			"key": "ClientId",
+			"value": "YOUR_CLIENT_ID",
+			"enabled": true
+		},
+		{
+			"key": "ClientSecret",
+			"value": "YOUR_CLIENT_SECRET",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "ApiKey",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "BasePath",
+			"value": "api.{{Environment}}tictoc.ai/public/v1.0",
+			"enabled": true
+		},
+		{
+			"key": "Environment",
+			"value": "stage.",
+			"enabled": true
+		},
+		{
+			"key": "SessionToken",
+			"value": "{{SessionToken}}",
+			"enabled": true
+		},
+		{
+			"key": "Arn",
+			"value": "{{Arn}}",
+			"enabled": true
+		},
+		{
+			"key": "GroupId",
+			"value": "{{GroupId}}",
+			"enabled": true
+		},
+		{
+			"key": "FetchApiKey",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "ApplicantOneId",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "ApplicantTwoId",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "ApplicantOneUploadUrl",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "ApplicantTwoUploadUrl",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "current_timestamp",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "DocumentUploadLinkUrl",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "DocumentId",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "DocumentDownloadLinkUrl",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "AppOneRentalIncomeProperty",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "AppOneRentalIncome",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "AppOneSalary",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "AppOneHomeLoanRepayment",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "AppOneHomeLoanBalance",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "AppOnePersonalLoanRepayment",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "AppOneCreditCardLimit",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "HouseholdOneExpenses",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "NewLoanRepayment",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "NetMonthlySurplus",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "DebtToIncomeRatio",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "AllHouseholdsHemExpenses",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "MaxBorrowingAmount",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "CurrentLoanRepayment",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "ExtraRepayment",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2024-12-01T02:03:05.996Z",
+	"_postman_exported_using": "Postman/11.20.0"
+}
