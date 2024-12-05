@@ -1,0 +1,513 @@
+{
+	"info": {
+		"_postman_id": "35bc9a64-444c-47e1-a15d-2944bd506ce1",
+		"name": "Xapii Document API Examples",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3797620"
+	},
+	"item": [
+		{
+			"name": "Get Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"SessionToken\", jsonData.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-length": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{ClientSecret}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{ClientId}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "https://{{AuthUrl}}/oauth2/token?grant_type={{GrantType}}",
+					"protocol": "https",
+					"host": [
+						"{{AuthUrl}}"
+					],
+					"path": [
+						"oauth2",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "{{GrantType}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create application shell 🐚",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"Arn\", jsonData.ApplicationReferenceNumber);\r",
+							"pm.environment.set(\"ApplicantOneId\", jsonData.Applicants[0].Email);\r",
+							"// pm.environment.set(\"ApplicantTwoId\", jsonData.Applicants[1].Email);\r",
+							"pm.environment.set(\"ApplicantOneContactId\", jsonData.Applicants[0].ContactId);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SessionToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{ApiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Application\": {\r\n        \"ExternalApplicationReferenceNumber\": \"I_AM_READY\",\r\n        \"ApplicationContacts\": [\r\n            {\r\n                \"EmailAddress\": \"human11@example.com \",\r\n                \"FirstName\": \"Human1\",\r\n                \"Surname\": \"Person\",\r\n                \"ExternalDataId\": {\r\n                    \"DataProviderName\": \"EXT\"\r\n                }\r\n            }\r\n        ],\r\n        \"IsActualsOnly\": false\r\n    },\r\n    \"Lender\": \"YOUR_POLICY_CODE\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BasePath}}/financialvalidation/application/create",
+					"protocol": "https",
+					"host": [
+						"{{BasePath}}"
+					],
+					"path": [
+						"financialvalidation",
+						"application",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add some loan application info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SessionToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{ApiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Application\": {\r\n        \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n        \"ApplicationStatus\": \"Assess\",\r\n        \"SecurityProperties\": [\r\n            {\r\n                \"PropertyAddress\": \"Your Loan\",\r\n                \"PropertyPostcode\": \"5067\",\r\n                \"PropertyUsage\": \"Livein\",\r\n                \"EstimatedValue\": 45000\r\n            }\r\n        ],\r\n        \"Product\": {\r\n            \"RepaymentType\": \"PI\",\r\n            \"LoanPurpose\": \"PUR\",\r\n            \"LoanTerm\": 5,\r\n            \"InterestRate\": 0.0949,\r\n            \"LoanAmount\": 42000\r\n        },\r\n        \"Households\": [\r\n            {\r\n                \"HouseholdAddress\": \"21 Jump Street, Norwood SA, 5067\",\r\n                \"ApplicationContacts\": [\r\n                    {\r\n                        \"EmailAddress\": \"{{ApplicantOneId}}\",\r\n                        \"MaritalStatus\": \"DEFACTO\",\r\n                        \"Dependants\": 1,\r\n                        \"DeclaredFinancialsApplicant\": {\r\n                            \"IncomeSalary\": {\r\n                                \"IncomeGrossAnnualSalaryAmount\": 180000,\r\n                                \"IncomeGrossAnnualSalaryFrequency\": \"ANNUAL\",\r\n                                \"Employer\": \"ACME Inc\",\r\n                                \"EmploymentType\": \"CASUAL\"\r\n                            }\r\n                        }\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BasePath}}/financialvalidation/application/manage",
+					"protocol": "https",
+					"host": [
+						"{{BasePath}}"
+					],
+					"path": [
+						"financialvalidation",
+						"application",
+						"manage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Link to Upload Document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"UploadLink\", jsonData.LinkUrl);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SessionToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{ApiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n  \"DocumentName\": \"TEST_DOCUMENT.pdf\",\r\n  \"FileType\": \"application/pdf\",\r\n  \"ContactIds\": [ {{ApplicantOneContactId}}]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BasePath}}/document/upload",
+					"protocol": "https",
+					"host": [
+						"{{BasePath}}"
+					],
+					"path": [
+						"document",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{ApiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "/Users/richardshanahan/Downloads/TEST_DOCUMENT.pdf"
+					}
+				},
+				"url": {
+					"raw": "{{UploadLink}}",
+					"host": [
+						"{{UploadLink}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get List of Documents",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"DocumentId\", jsonData.ApplicationDocuments[0].Id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SessionToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{ApiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"ApplicationReferenceNumber\": \"{{Arn}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BasePath}}/document/getlist",
+					"protocol": "https",
+					"host": [
+						"{{BasePath}}"
+					],
+					"path": [
+						"document",
+						"getlist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Link to Download Document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"DownloadLink\", jsonData.LinkUrl);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SessionToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{ApiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"ApplicationReferenceNumber\": \"{{Arn}}\",\r\n  \"DocumentId\": {{DocumentId}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BasePath}}/document/download",
+					"protocol": "https",
+					"host": [
+						"{{BasePath}}"
+					],
+					"path": [
+						"document",
+						"download"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download Document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{ApiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DownloadLink}}",
+					"host": [
+						"{{DownloadLink}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ClientId",
+			"value": null
+		},
+		{
+			"key": "ClientSecret",
+			"value": null
+		},
+		{
+			"key": "Environment",
+			"value": "stage."
+		},
+		{
+			"key": "GrantType",
+			"value": "client_credentials"
+		},
+		{
+			"key": "ApiKey",
+			"value": null
+		},
+		{
+			"key": "AuthUrl",
+			"value": "auth.stage.tictoc.ai"
+		},
+		{
+			"key": "SessionToken",
+			"value": "{{SessionToken}}"
+		},
+		{
+			"key": "BasePath",
+			"value": "api.{{Environment}}tictoc.ai/public/v1.0"
+		}
+	]
+}
