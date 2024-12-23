@@ -75,6 +75,10 @@ servers:
   description: Test server
 - url: https://api.tictoc.ai/public/
   description: Production server
+- url: https://auth.stage.tictoc.ai/oauth2
+  description: Test authorisation server
+- url: https://auth.tictoc.ai/oauth2
+  description: Production authorisation server
 paths:
   /token:
     post:
