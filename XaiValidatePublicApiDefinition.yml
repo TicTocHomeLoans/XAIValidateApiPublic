@@ -86,6 +86,8 @@ paths:
         description: Test authorisation server
       - url: https://auth.tictoc.ai/oauth2
         description: Production authorisation server
+      security:
+        - basicAuth: []
       description: >-
         Before you can call the Xapii endpoints, you must authenticate via the /token API. Successful authentication will return a token that you can use to gain access to Xapii's functional APIs. 
              
@@ -101,8 +103,7 @@ paths:
             Keep your credentials safe and secure. Don't share your credentials or publish them to publicly accessible locations such as your client-side code or GitHub.
         
       operationId: getToken
-      security:
-        - tokenAuth: []
+
       requestBody:
         required: true
         content:
@@ -207,12 +208,6 @@ paths:
           |`LinkUrl`|string||A unique data-linking URL for illion ODS or illion MultiBank customers.|
                     
       operationId: createApplication
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -271,12 +266,6 @@ paths:
           Xapii will compare these declared figures to the detected actuals in an applicant's linked accounts to ensure they meet your credit policy. 
 
       operationId: manageApplicationFinancials
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -315,12 +304,6 @@ paths:
         The application is retrieved using a `ApplicationReferenceNumber` (Arn) that is made available when creating your application.
         
       operationId: getApplication
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -365,12 +348,6 @@ paths:
         ### This is an irreversible action.
                     
       operationId: applicationDelete
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -426,12 +403,7 @@ paths:
           The response will return a unique `DeleteProcessId` and an array of one or more Application Delete Status Results.
                     
       operationId: applicationDeleteStatusEnquiry
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true      
+      parameters:   
         - in: query
           name: id
           schema:
@@ -478,12 +450,6 @@ paths:
         This endpoint is only relevant to our "platform as a service" partners.
         
       operationId: getApplicationBeginUrl
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -531,12 +497,6 @@ paths:
         Once your customers' data has been uploaded the financial validation process will be triggered. You can monitor progress through  [`/financialvalidation/application/getstatus`](#/getFinancialValidationJob) and retrieve results from  [`/financialvalidation/result/getsummary`](#/getResultsSummary).
 
       operationId: manageAccountTransaction
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -650,12 +610,6 @@ paths:
           * `TransactionDescription`: the raw transaction description
           * `TransactionAmount`: the raw transaction amount with its sign. Remember, only expenses (amount < $0) are categorised by this endpoint.
       operationId: enrichExpenses
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -703,12 +657,6 @@ paths:
           | `ApplicationContactResults` | This object contains detailed information about the Xapii by Tiimely assessment of your applicants' financial position. Individual objects will be returned for income (salary, rental and other), home loans, credit cards and personal loans. |
         
       operationId: getResultsSummary
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -751,12 +699,6 @@ paths:
           - summary of key metrics (amount, tax treatment etc.), the `DataOrigin` of the income (i.e. user, Open Banking etc.) and the `IncomeSource` (e.g. employer name).
          
       operationId: incomegetlist
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -801,12 +743,6 @@ paths:
           - Totals: the date range, total volume and value
         
       operationId: getExpenseSummary
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -853,12 +789,6 @@ paths:
           - `DEAD` - oops... something's gone wrong. No further processing takes place - we'll monitor the system for these issues.
         
       operationId: getFinancialValidationJob
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -1003,12 +933,6 @@ paths:
               * `VALIDATED`: user-validated data from assessment.
                
       operationId: serviceabilityMetrics
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -1069,12 +993,6 @@ paths:
               * `null`
 
       operationId: potentialmaxborrowing
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -1133,12 +1051,6 @@ paths:
         
         
       operationId: createTestApplication
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -1174,7 +1086,7 @@ paths:
       description:  >-
         This endpoint returns a pre-signed URL to upload the document. Upload the documents using this URL via the /{UploadDocumentUrl} endpoint.
 
-        The request must include the `ApplicationReferenceNumber`, `DocumentName` and an enumeration for `FileType` and `DocumentType`.
+        The request must include the `ApplicationReferenceNumber`, `DocumentName` and an enumeration for `FileType`.
         
         
         The `FileType` is the MIME type of the document with enumerations:
@@ -1227,12 +1139,6 @@ paths:
 
         Document ownership can be changed using the UI for most documents — excluding documents which have been processed by OCR such as bank statements.
       operationId: uploadDocument
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -1399,12 +1305,6 @@ paths:
           | `DEAD` | Processing failed numerous times and will not be re-attempted. |
           | `UNSUPPORTED` | We have yet to support this type of document or an issue has been reported via the user interface. |
       operationId: getDocumentList
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -1514,12 +1414,6 @@ paths:
           | `DEAD` | Processing failed numerous times and will not be re-attempted. |
           | `UNSUPPORTED` | We have yet to support this type of document or an issue has been reported via the user interface. |
       operationId: getDocument
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -1556,12 +1450,6 @@ paths:
         This endpoint generates a pre-signed URL to download a document. The is then used with the [`{DownloadDocumentUrl}`](#{DownloadDocumentUrl}) call.
         
       operationId: downloadDocument
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -1659,12 +1547,6 @@ paths:
 
             
       operationId: getPostcodeCategory
-      parameters:
-        - in: header
-          name: x-api-key
-          schema:
-            type: string
-          required: true
       requestBody:
         description: The JSON request body for the POST.
         content:
@@ -4732,7 +4614,6 @@ components:
         - ApplicationReferenceNumber
         - DocumentName
         - FileType
-        - DocumentType
       type: object
       properties:
         ApplicationId:
@@ -5443,17 +5324,12 @@ components:
 
 
   securitySchemes:
-    tokenAuth:
+    basicAuth:
       type: http
       scheme: basic
-    apiAuth: 
+    bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    apiKeyAuth:
-      type: apiKey
-      in: header
-      name: x-api-key
 security:
-- apiAuth: []
-- apiKeyAuth: []
+  - bearerAuth: []
