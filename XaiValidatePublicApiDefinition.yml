@@ -107,19 +107,23 @@ paths:
             Keep your credentials safe and secure. Don't share your credentials or publish them to publicly accessible locations such as your client-side code or GitHub.
         
       operationId: getToken
-
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                grant_type:
-                  type: string
-                  example: client_credentials
-              required:
-                - grant_type
+      parameters:
+        - name: grant_type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: 
+              - client_credentials
+          description: OAuth2 grant type (must be `client_credentials`)
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+              - application/x-www-form-urlencoded
+          description: The content type of the request, must be `application/x-www-form-urlencoded`
       responses:
         200:
           description: Success
