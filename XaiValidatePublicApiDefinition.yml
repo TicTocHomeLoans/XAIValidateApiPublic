@@ -645,7 +645,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseRequestError'
       x-codegen-request-body-name: RequestBody
-  /v1.0/income/detected-incomes:
+  /v1.0/income/detected/savelist:
     post:
       tags:
       - Income
@@ -669,12 +669,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/addDetectedIncomeResponse'
-        400:
-          description: Invalid request.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseAddDetectedIncomes400'
         401:
           description: Unauthorized.
           content:
@@ -688,8 +682,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseRequestError'
       x-codegen-request-body-name: RequestBody
-  /v1.0/income/delete-detected-incomes:
-    delete:
+  /v1.0/income/detected/delete:
+    post:
       tags:
       - Income
       summary: Delete a detected income to an applicant within an application
@@ -712,12 +706,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/deleteDetectedIncomeResponse'
-        400:
-          description: Invalid request.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseDeleteDetectedIncomes400'
         401:
           description: Unauthorized.
           content:
@@ -725,7 +713,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseRequestError'
         422:
-          description: Unable to create application.
+          description: Invalid request
           content:
             application/json:
               schema:
@@ -3947,141 +3935,34 @@ components:
                       example: 0.85485233
                       description: Discretionary expense prediction probability.
     addDetectedIncomeRequest:
-      type: array
-      description: List of pre-detected incomes successfully linked to applicants within an application.  
-      items:
-        type: object
-        required:
-        - ApplicationContactId
-        - IncomeType
-        - Amount
-        - Frequency
-        - Metadata
-        properties:
-          DetectedIncomeId:
-            type: string
-            format: uuid
-            description: Unique identifier for the detected income. If provided, the API will update the corresponding Income record; otherwise, a new record will be created.
-          ApplicationContactId:
-            type: integer
-            example: 12345
-            description: The required application contact identifier to which the income will be linked
-          IncomeType:
-            type: string
-            description: Unique enumeration for the detected income
-            enum:
-            - BN
-            - DIV
-            - GOV
-            - INT
-            - LFY
-            - RENT
-            - SAL
-            - SUPER
-            - OVR
-            - CS 
-            - GIF
-            - MIF      
-            - OTHER
-            - PL
-            - ROY
-            - TAX
-            - TST
-            - II
-            - ABI
-            - DEP
-            - MV
-            - NP
-            - NP
-            - OIADB
-            - SEOADB
-            - CAR
-          Amount:
-            type: integer
-            format: decimal
-            description: The annual income amount detected. Must be non-negative.
-            example: 5458.11
-          YearToDate:
-            type: integer
-            format: decimal
-            description: The income amount detected pay year to date. Must be non-negative.
-            example: 21234.11
-          Frequency:
-            type: string
-            description: The income frequency
-            enum:
-            - MONTH
-            - FORT
-            - WEEK
-            - ANNUAL
-            - IRREGULAR
-          IsAmountNet:
-            type: boolean
-            description: Boolean indicator as to whether the detected amount is net or gross of taxation
-          PayStart:
-            type: string
-            format: date-time
-            description: Date and time indicator as to when the detected income pay period started
-          PayEnd:
-            type: string
-            format: date-time
-            description: Date and time indicator as to when the detected income pay period ended
-          IncomeAgeInDays:
-            type: integer
-            description: The age in days of the detected income from the oldest detected income
-            example: 180
-          Metadata:
-            type: object
-            required:
-            - DataSource
-            - Method
-            properties:
-              DataSource:
-                type: string
-                description: Enumeration indicating the source of the detected income data.
-                enum:
-                - PAYSLIP
-              Method:
-                type: string
-                description: Enumeration indicating the provide of the source of the detected income data.
-                enum:
-                - EFX_VE
-
-    addDetectedIncomeResponse:
-      type: object
-      required:
-        - Status
-        - Message
-        - Results
-        - Errors
+      required: 
+        - ApplicationReferenceNumber
+        - DetectedIncomes
       properties:
-        Status:
+        ApplicationReferenceNumber:
           type: string
-          description: Status indicator for the detected income request
-          enum:
-            - Success
-            - Failed
-        Message:
-          type: string
-          description: Message indicating status of detected income load
-        Results:
+          description: Unique identifier for the application.
+          example: "ABC123456"
+        DetectedIncomes:
           type: array
-          description: List of detected incomes including identifiers and statuses
+          description: List of pre-detected incomes successfully linked to applicants within an application.  
           items:
             type: object
             required:
-              - DetectedIncomeId
-              - ApplicationContactId
-              - Frequency
-              - Status
+            - ContactId
+            - IncomeType
+            - Amount
+            - AmountType
+            - Metadata
             properties:
               DetectedIncomeId:
                 type: string
                 format: uuid
-                description: Unique identifier for the added detected income
-              ApplicationContactId:
+                description: Unique identifier for the detected income. If provided, the API will update the corresponding Income record; otherwise, a new record will be created.
+              ContactId:
                 type: integer
-                description: Unique identifier for the applicant
+                example: 12345
+                description: The required application contact identifier to which the income will be linked
               IncomeType:
                 type: string
                 description: Unique enumeration for the detected income
@@ -4117,11 +3998,14 @@ components:
                 format: decimal
                 description: The annual income amount detected. Must be non-negative.
                 example: 5458.11
-              YearToDate:
-                type: integer
-                format: decimal
-                description: The income amount detected pay year to date. Must be non-negative.
-                example: 21234.11
+              AmountType:
+                type: string
+                description: Unique enumeration for amount type
+                enum:
+                - GROSSANNUAL
+                - NETANNUAL
+                - GROSSYEARTODATE
+                - NETYEARTODATE
               Frequency:
                 type: string
                 description: The income frequency
@@ -4131,9 +4015,6 @@ components:
                 - WEEK
                 - ANNUAL
                 - IRREGULAR
-              IsAmountNet:
-                type: boolean
-                description: Boolean indicator as to whether the detected amount is net or gross of taxation
               PayStart:
                 type: string
                 format: date-time
@@ -4162,76 +4043,193 @@ components:
                     description: Enumeration indicating the provide of the source of the detected income data.
                     enum:
                     - EFX_VE
-              Status:
+              Description:
                 type: string
-                description: Status indicator for the detected income request
-                enum:
-                - Created
-                - Updated
-        Errors:
-          type: array
-          items:
-            type: object
-            properties:
-              Field:
-                type: string
-              Value:
-                type: string
-              Message:
-                type: string
-    deleteDetectedIncomeRequest:
+                description: Income description
+                maxLength: 255
+
+    addDetectedIncomeResponse:
       type: object
-      required:
-        - DetectedIncomeIds
-      properties:
-        DetectedIncomeIds:
-          type: array
-          items:
-            type: string
-            description: list of unique DetectedIncomeId UUIDs returned from create/update requests
-            format: uuid
-    deleteDetectedIncomeResponse:
-      type: object
-      required:
-      - Status
-      - Message
-      - Results
       properties:
         Status:
           type: string
+          description: Status indicator for the overall detected income request
+          enum:
+            - SUCCESS
+            - FAILED
+            - COMPLETEDWITHERRORS
         Message:
           type: string
+          description: Message indicating overall status of detected income load
         Results:
           type: array
+          description: List of detected incomes including identifiers and statuses
           items:
             type: object
             properties:
               DetectedIncomeId:
                 type: string
                 format: uuid
+                description: Unique identifier for the added detected income
+              ContactId:
+                type: integer
+                example: 12345
+                description: The required application contact identifier to which the income will be linked
+              IncomeType:
+                type: string
+                description: Unique enumeration for the detected income
+                enum:
+                - BN
+                - DIV
+                - GOV
+                - INT
+                - LFY
+                - RENT
+                - SAL
+                - SUPER
+                - OVR
+                - CS 
+                - GIF
+                - MIF      
+                - OTHER
+                - PL
+                - ROY
+                - TAX
+                - TST
+                - II
+                - ABI
+                - DEP
+                - MV
+                - NP
+                - NP
+                - OIADB
+                - SEOADB
+                - CAR
+              Amount:
+                type: integer
+                format: decimal
+                description: The annual income amount detected. Must be non-negative.
+                example: 5458.11
+              AmountType:
+                type: string
+                description: Unique enumeration for amount type
+                enum:
+                - GROSSANNUAL
+                - NETANNUAL
+                - GROSSYEARTODATE
+                - NETYEARTODATE
+              Frequency:
+                type: string
+                description: The income frequency
+                enum:
+                - MONTH
+                - FORT
+                - WEEK
+                - ANNUAL
+                - IRREGULAR
+              PayStart:
+                type: string
+                format: date-time
+                description: Date and time indicator as to when the detected income pay period started
+              PayEnd:
+                type: string
+                format: date-time
+                description: Date and time indicator as to when the detected income pay period ended
+              IncomeAgeInDays:
+                type: integer
+                description: The age in days of the detected income from the oldest detected income
+                example: 180
+              Metadata:
+                type: object
+                required:
+                - DataSource
+                - Method
+                properties:
+                  DataSource:
+                    type: string
+                    description: Enumeration indicating the source of the detected income data.
+                    enum:
+                    - PAYSLIP
+                  Method:
+                    type: string
+                    description: Enumeration indicating the provide of the source of the detected income data.
+                    enum:
+                    - EFX_VE
+              Description:
+                type: string
+                description: Income description
+                maxLength: 255
               Status:
                 type: string
-        Errors:
+                description: Status indicator for the detected income
+                enum:
+                - CREATED
+                - UPDATED
+                - FAILED
+              Messages:
+                type: array
+                items:
+                  type: string
+                  description: List of messages related to the outcome of detected income
+    deleteDetectedIncomeRequest:
+      required: 
+        - ApplicationReferenceNumber
+        - DetectedIncomeIds
+      properties:
+        ApplicationReferenceNumber:
+          type: string
+          description: Unique identifier for the application.
+          example: "ABC123456"
+        DetectedIncomeIds:
           type: array
+          description: List of pre-detected incomes successfully linked to applicants within an application.  
+          items:
+            type: string
+            format: uuid
+            description: Unique identifier for the detected income. If provided, the API will delete the corresponding Income record; otherwise.
+                
+    deleteDetectedIncomeResponse:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: Status indicator for the overall delete income request
+          enum:
+            - SUCCESS
+            - FAILED
+            - COMPLETEDWITHERRORS
+        Message:
+          type: string
+          description: Message indicating overall status of delete income request
+        Results:
+          type: array
+          description: List of detected incomes including identifiers and statuses
           items:
             type: object
             properties:
-              Field:
+              DetectedIncomeId:
                 type: string
-              Value:
+                format: uuid
+                description: Unique identifier for the deleted detected income
+              Status:
                 type: string
+                description: Status indicator for the deleted detected income
+                enum:
+                - CREATED
+                - UPDATED
+                - FAILED
               Message:
                 type: string
+                description: Message related to the outcome of detected income
       example:
-        Status: "Success"
-        Message: "Detected incomes deleted successfully."
+        Status: "COMPLETEDWITHERRORS"
+        Message: "Processing completed with one or more errors."
         Results:
           - DetectedIncomeId: "f59c17d8-2aa0-4f26-ba1a-725a5a7c7043"
             Status: "Deleted"
-        Errors:
-          - Field: "DetectedIncomeId"
-            Value: "ab765300-bec7-44aa-ab45-cfae3c21fe5d"
-            Message: "DetectedIncome not found."
+          - DetectedIncomeId: "qq9cxxd8-2aa0-4f26-ba1a-725a5a7c704q"
+            Status: "Error"
+            Message: "DetectedIncomeId is invalid or not found."
     ResponseNewFacility:
       type: object
       description: The new debt facilities for which your customer is applying for serviceability results.
