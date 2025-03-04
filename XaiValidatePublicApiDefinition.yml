@@ -4037,12 +4037,12 @@ components:
                     type: string
                     description: Enumeration indicating the source of the detected income data.
                     enum:
-                    - PAYSLIP
+                    - EVE
                   Method:
                     type: string
                     description: Enumeration indicating the provide of the source of the detected income data.
                     enum:
-                    - EFX_VE
+                    - Payslip
               Description:
                 type: string
                 description: Income description
@@ -4149,12 +4149,12 @@ components:
                     type: string
                     description: Enumeration indicating the source of the detected income data.
                     enum:
-                    - PAYSLIP
+                    - EVE
                   Method:
                     type: string
                     description: Enumeration indicating the provide of the source of the detected income data.
                     enum:
-                    - EFX_VE
+                    - Payslip
               Description:
                 type: string
                 description: Income description
