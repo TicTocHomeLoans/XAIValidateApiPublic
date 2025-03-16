@@ -3935,6 +3935,7 @@ components:
                       example: 0.85485233
                       description: Discretionary expense prediction probability.
     addDetectedIncomeRequest:
+      type: object
       required: 
         - ApplicationReferenceNumber
         - DetectedIncomes
@@ -4172,6 +4173,7 @@ components:
                   type: string
                   description: List of messages related to the outcome of detected income
     deleteDetectedIncomeRequest:
+      type: object
       required: 
         - ApplicationReferenceNumber
         - DetectedIncomeIds
