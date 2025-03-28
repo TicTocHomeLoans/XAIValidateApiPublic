@@ -4038,12 +4038,12 @@ components:
                     type: string
                     description: Enumeration indicating the source of the detected income data.
                     enum:
-                    - EVE
+                    - Payroll
                   Method:
                     type: string
                     description: Enumeration indicating the provide of the source of the detected income data.
                     enum:
-                    - Payslip
+                    - Equifax Verification Exchange
               Description:
                 type: string
                 description: Income description
@@ -4150,12 +4150,12 @@ components:
                     type: string
                     description: Enumeration indicating the source of the detected income data.
                     enum:
-                    - EVE
+                    - Payroll
                   Method:
                     type: string
                     description: Enumeration indicating the provide of the source of the detected income data.
                     enum:
-                    - Payslip
+                    - Equifax Verification Exchange
               Description:
                 type: string
                 description: Income description
