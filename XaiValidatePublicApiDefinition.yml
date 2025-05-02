@@ -4188,7 +4188,8 @@ components:
           items:
             type: string
             format: uuid
-            description: Unique identifier for the detected income. If provided, the API will delete the corresponding Income record; otherwise.
+            description: Unique identifier for the detected income. If provided, the API will delete the corresponding Income record.
+            example: ["f59c17d8-2aa0-4f26-ba1a-725a5a7c7043", "qq9cxxd8-2aa0-4f26-ba1a-725a5a7c704q"]
                 
     deleteDetectedIncomeResponse:
       type: object
